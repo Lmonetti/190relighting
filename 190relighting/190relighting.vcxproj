@@ -74,11 +74,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\eigen\eigen-eigen-07105f7124f9;C:\glut\glut-3.7.6-bin</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Sylvia\Documents\GitHub\cse190\190relighting\190relighting\include;C:\glut\glut-3.7.6-bin;C:\eigen\eigen-eigen-07105f7124f9</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\glut\glut-3.7.6-bin;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\glut\glut-3.7.6-bin</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -98,13 +98,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\glut\glut-3.7.6-bin</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Sylvia\Documents\GitHub\cse190\190relighting\190relighting\include;C:\glut\glut-3.7.6-bin;C:\eigen\eigen-eigen-07105f7124f9</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\glut\glut-3.7.6-bin;C:\glm\glm-0.9.7.2\glm</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\glut\glut-3.7.6-bin</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -122,11 +122,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PNGImage.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="lodepng.h" />
     <ClInclude Include="PNGImage.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
