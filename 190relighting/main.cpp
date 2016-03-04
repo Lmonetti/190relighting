@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "lodepng.h"    //Load PNG files
+#include "Window.h"
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -28,16 +29,23 @@ void display() {}
 
 int main(int argc, char* argv[]) {
 	//parse_command_line(argc, argv);
-	//glutInit(&argc, argv);
+	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-	glutCreateWindow("Viewer");
-	init();
-	display();
-	//glutDisplayFunc(display);
-	//glutKeyboardFunc(keyboard);
-	//glutSpecialFunc(specialKey);
-	//glutReshapeFunc(reshape);
-	//glutReshapeWindow(width, height);
+	glutInitWindowSize(Window::width, Window::height);          //Set initial window size
+	glutCreateWindow("Precomputed Radiance Transfer");			//Open window and set window title
+
+	glutDisplayFunc(Window::displayCallback);
+	glutKeyboardFunc(Window::keyboardCallback);
+	glutReshapeFunc(Window::reshapeCallback);
+
+	//create menu
+	glutCreateMenu(Window::menuItemCallback);
+
+	//add entry for collapsing edge. Pass 0 to callback function
+	glutAddMenuEntry("Spherical Harmonics", 0);
+	glutAddMenuEntry("Wavelets", 1);
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+
 	glutMainLoop();
 	return 0;
 }
