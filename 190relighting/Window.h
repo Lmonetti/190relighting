@@ -1,10 +1,18 @@
 #ifndef Window_h
 #define Window_h
 
+#define _SCL_SECURE_NO_WARNINGS
+
 class Window		//OpenGL output window-related routines
 {
 public:
-	static float width, height;
+	//parameters
+	static unsigned int width;
+	static unsigned int height;
+	static unsigned int resolution;
+	static int default_width;
+	static int default_height;
+	static int default_bitDepth;
 
 	static void initialize(void);
 	static void idleCallback(void);

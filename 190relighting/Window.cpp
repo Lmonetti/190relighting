@@ -1,4 +1,9 @@
 #include <iostream>
+#include <cstring>
+#include <time.h>
+#include <math.h>
+#include <cassert>
+#include <dirent.h>   //Read all files from directory
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -7,13 +12,15 @@
 #endif
 
 #include "Window.h"
-#include <cstring>
-#include <time.h>
-#include <math.h>
-#include <cassert>
+#include "lodepng.h"    //Load PNG files
 
-float Window::width = 512;   //Set window width in pixels here
-float Window::height = 512;   //Set window height in pixels here
+int Window::default_width = 512;
+int Window::default_height = 384;
+int Window::default_bitDepth = 24;
+
+unsigned int Window::width;
+unsigned int Window::height;
+unsigned int Window::resolution;
 
 void Window::initialize(void)
 {
@@ -21,6 +28,50 @@ void Window::initialize(void)
 	GLfloat light_position[] = { 1.0, 40.0, 200.0, 0.0 };
 	gluLookAt(15, 0, 15, 0, 0, 0, 0, 1, 0);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+	//set window width and height
+	width = default_width;
+	height = default_height;
+
+	DIR *dir;
+	struct dirent *ent;
+	char* directoryName = "povray/sphere";
+	char* directoryNameWithSlash = "povray/sphere/";
+
+	if ((dir = opendir(directoryName)) != NULL) {
+		/* print all the files and directories within directory*/
+		while ((ent = readdir(dir)) != NULL) {
+			std::printf("\nReading in file name %s\n", ent->d_name);
+			unsigned char** out = new unsigned char* ();
+			width = default_width;
+			height = default_height;
+			std::string temp = std::string(directoryNameWithSlash) + std::string(ent->d_name);
+
+			const char* filename = temp.c_str();
+
+			unsigned error = lodepng_decode_file(out, &width, &height, filename, LCT_RGB, 24);
+
+			if (error != NULL) {
+				if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+			}
+			else {
+				//std::cout << "size of array is " << sizeof(out) << std::endl;
+
+				//for debug
+				/*for(int i = 0; i < sizeof(out); ++i) {
+				for (int j = 0; j < sizeof(out[i]); ++j) {
+				if (out[i][j] != NULL)
+				std::cout << "at[" << i << "][" << j << "] is " << out[i][j] << std::endl;
+				}
+				}*/
+			}
+		}
+		closedir(dir);
+	}
+	else {
+		/* cannot open directory*/
+		std::perror("Directory_Error");
+	}
 }
 
 //----------------------------------------------------------------------------
