@@ -33,9 +33,9 @@ unsigned int Window::resolution;
 void Window::initialize(void)
 {
 	//Setup the light
-	GLfloat light_position[] = { 1.0, 40.0, 200.0, 0.0 };
-	gluLookAt(15, 0, 15, 0, 0, 0, 0, 1, 0);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	//GLfloat light_position[] = { 1.0, 40.0, 200.0, 0.0 };
+	//gluLookAt(15, 0, 15, 0, 0, 0, 0, 1, 0);
+	//glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
 	//set window width and height
 	width = default_width;
@@ -80,6 +80,16 @@ void Window::initialize(void)
 		/* cannot open directory*/
 		std::perror("Directory_Error");
 	}
+
+	lightWeights[0] = Eigen::VectorXd(20);
+	lightWeights[0] << 0, 0, 0, 0, 0, 0, 0, 0, .25, 0, .25,
+		0, .25, 0, .25, 0, 0, 0, 0, 0;
+	
+	lightWeights[1] = Eigen::VectorXd(20);
+	lightWeights[1] << 0, 0, 0, 0, .5, .5, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0;
+	
+	float* pixels = new float[(int)width * (int)height];
 }
 
 //----------------------------------------------------------------------------
