@@ -21,12 +21,11 @@ PNGImage::PNGImage(std::vector<unsigned char>* img, int w, int h)
 
 	//Read in data parsed by dirent, place separate color 
 	//channels into their respective arrays.
-	for (int i = 0, j = 0; i < redChannel->size(); ++i, j += 4)
+	for (unsigned int i = 0, j = 0; j < img->size(); ++i, j += 4)
 	{
-		//std::cerr << "red char: " << img->at(j) << std::endl;
-		
+		//std::cerr << "red char: " << (int) img->at(j) << std::endl;
 		//convert unsigned char to double
-		r = (double)img->at(j);
+		r = static_cast<double>(img->at(j)) / 255.0f;
 
 		//std::cerr << "red double: " << r << std::endl;
 
@@ -35,17 +34,19 @@ PNGImage::PNGImage(std::vector<unsigned char>* img, int w, int h)
 
 		//std::cerr << "Green pixel: " << static_cast<double>(img->at(i)) << std::endl;
 
-		g = static_cast<double>(img->at(j + 1));
+		g = static_cast<double>(img->at(j + 1)) / 255.0f;
+		//std::cerr << "green double: " << g << std::endl;
 
 		//second value goes into Green channel
 		(*greenChannel)(i) = g;
 
-		b = static_cast<double>(img->at(j + 2));
+		b = static_cast<double>(img->at(j + 2)) / 255.0f;
 
 		//third value goes into Blue channel
 		(*blueChannel)(i) = b;
+		//std::cerr << "blue double: " << b << std::endl;
 
-		//loop increment will place index at next pixel, so no need to increment i or j again
+		//loop increment will place index at next pixel, so no need to increment i again
 
 		//std::cerr << "channel index: " << i << std::endl;
 		//std::cerr << "image data index: " << j << std::endl;

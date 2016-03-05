@@ -26,6 +26,8 @@ freely, subject to the following restrictions:
 #ifndef LODEPNG_H
 #define LODEPNG_H
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <string.h> /*for size_t*/
 
 #ifdef __cplusplus
@@ -1460,9 +1462,9 @@ The Mingw compiler (a port of gcc) for Windows is fully supported by LodePNG.
 Visual Studio may give warnings about 'fopen' being deprecated. A multiplatform library
 can't support the proposed Visual Studio alternative however, so LodePNG keeps using
 fopen. If you don't want to see the deprecated warnings, put this on top of lodepng.h
-before the inclusions:
+before the inclusions:*/
 #define _CRT_SECURE_NO_DEPRECATE
-
+/*
 Other than the above warnings, LodePNG should be warning-free with warning
 level 3 (W3). Warning level 4 (W4) will give warnings about integer conversions.
 I'm not planning to resolve these warnings. To get rid of them, let Visual
