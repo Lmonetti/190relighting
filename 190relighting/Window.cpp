@@ -11,16 +11,32 @@
 #include <time.h>
 #include <math.h>
 #include <cassert>
+#include "Combiner.h"
+#include <Eigen/Dense>
 
 float Window::width = 512;   //Set window width in pixels here
-float Window::height = 512;   //Set window height in pixels here
+float Window::height = 384;   //Set window height in pixels here
+float* Window::pixels;
+Eigen::VectorXd* Window::lightWeights;
 
 void Window::initialize(void)
 {
 	//Setup the light
-	GLfloat light_position[] = { 1.0, 40.0, 200.0, 0.0 };
-	gluLookAt(15, 0, 15, 0, 0, 0, 0, 1, 0);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	//GLfloat light_position[] = { 1.0, 40.0, 200.0, 0.0 };
+	//gluLookAt(15, 0, 15, 0, 0, 0, 0, 1, 0);
+	//glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+	lightWeights[0] =  Eigen::VectorXd(20);
+	lightWeights[0] << 0, 0, 0, 0, 0, 0, 0, 0, .25, 0, .25,
+		0, .25, 0, .25, 0, 0, 0, 0, 0;
+
+	lightWeights[1] = Eigen::VectorXd(20);
+	lightWeights[1] << 0, 0, 0, 0, .5, .5, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0;
+
+	float* pixels = new float[(int)width * (int)height];
+
+	Combiner::combine(lightWeights[0], pixels);
 }
 
 //----------------------------------------------------------------------------
@@ -59,6 +75,7 @@ void Window::displayCallback()
 	glMatrixMode(GL_MODELVIEW);
 
 	//DRAW IMAGE HERE
+	glDrawPixels(width, height, GL_RGB, GL_FLOAT, pixels);
 
 	//Pop off the changes we made to the matrix stack this frame
 	glPopMatrix();
@@ -74,7 +91,15 @@ void Window::displayCallback()
 
 void Window::keyboardCallback(unsigned char key, int x, int y) 
 {
-
+	switch (key)
+	{
+	case 'l':
+		Combiner::combine(lightWeights[0], pixels);
+		break;
+	case 'k':
+		Combiner::combine(lightWeights[1], pixels);
+		break;
+	}
 }
 
 //TODO: Mouse callbacks!

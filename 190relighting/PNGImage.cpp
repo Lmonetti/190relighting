@@ -12,9 +12,9 @@ PNGImage::PNGImage(unsigned char** img, int w, int h)
 	double r, g, b;
 
 	//initialize vectors storing color channel values for each pixel with correct length
-	transformRed(width * height);
-	transformGreen(width * height);
-	transformBlue(width * height);
+	redChannel(width * height);
+	greenChannel(width * height);
+	blueChannel(width * height);
 
 	//Read in data parsed by dirent, place separate color 
 	//channels into their respective arrays.
@@ -24,21 +24,21 @@ PNGImage::PNGImage(unsigned char** img, int w, int h)
 		r = static_cast<double>(*img[i]);
 
 		//first value goes into Red channel
-		transformRed(i) = r;
+		redChannel(i) = r;
 
 		i++;
 
 		g = static_cast<double>(*img[i]);
 
 		//second value goes into Green channel
-		transformGreen(i) = g;
+		greenChannel(i) = g;
 
 		i++;
 
 		b = static_cast<double>(*img[i]);
 
 		//third value goes into Blue channel
-		transformBlue(i) = b;
+		blueChannel(i) = b;
 
 		//loop increment will place index at next pixel, so no need to increment i again
 	}

@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 	//parse_command_line(argc, argv);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowSize(Window::width, Window::height);          //Set initial window size
+	glutInitWindowSize(width, height);          //Set initial window size
 	glutCreateWindow("Precomputed Radiance Transfer");			//Open window and set window title
 
 	glutDisplayFunc(Window::displayCallback);
@@ -45,6 +45,8 @@ int main(int argc, char* argv[]) {
 	glutAddMenuEntry("Spherical Harmonics", 0);
 	glutAddMenuEntry("Wavelets", 1);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
+
+	Window::initialize();
 
 	glutMainLoop();
 	return 0;

@@ -122,11 +122,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Combiner.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PNGImage.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Combiner.h" />
     <ClInclude Include="PNGImage.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

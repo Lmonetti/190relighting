@@ -1,5 +1,5 @@
-#ifndef PNG_IMAGE
-#define PNG_IMAGE
+#ifndef PNG_IMAGE_h
+#define PNG_IMAGE_h
 
 #include <Eigen/Dense>
 
@@ -9,9 +9,9 @@ public:
 	int width, height;
 
 	//vectors of color channel values for each pixel P_0 through P_n
-	Eigen::VectorXd transformRed;
-	Eigen::VectorXd transformGreen;
-	Eigen::VectorXd transformBlue;
+	Eigen::VectorXd redChannel;
+	Eigen::VectorXd greenChannel;
+	Eigen::VectorXd blueChannel;
 
 	PNGImage(unsigned char**, int, int);
 };
