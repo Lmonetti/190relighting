@@ -44,10 +44,10 @@ void Combiner::combine(Eigen::VectorXd lights, float* out)
 	blueChannel = *transformBlue * lights;
 
 	//loop through data, add each pixel to out array
-	for (int i = 0, j = 0; i < 3 * redChannel.size(); i += 3, j++)
+	for (int i = 3 * redChannel.size()-1, j = 0; i >= 0; i -= 3, j++)
 	{
-		out[i] = redChannel(j);
-		out[i + 1] = greenChannel(j);
-		out[i + 2] = blueChannel(j);
+		out[i - 2] = redChannel(j);
+		out[i - 1] = greenChannel(j);
+		out[i] = blueChannel(j);
 	}
 }
