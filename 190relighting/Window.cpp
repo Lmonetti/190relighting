@@ -24,11 +24,14 @@ int Window::default_width = 512;
 int Window::default_height = 384;
 int Window::default_bitDepth = 24;
 float* Window::pixels;
-Eigen::VectorXd* Window::lightWeights;
+Eigen::VectorXd Window::lightWeights[2];
 
 unsigned int Window::width;
 unsigned int Window::height;
 unsigned int Window::resolution;
+
+std::vector<PNGImage*>* Window::images;
+Combiner* Window::combiner;
 
 void Window::initialize(void)
 {
@@ -41,6 +44,8 @@ void Window::initialize(void)
 	width = default_width;
 	height = default_height;
 
+	images = new std::vector<PNGImage*>();
+
 	DIR *dir;
 	struct dirent *ent;
 	char* directoryName = "povray/sphere";
@@ -50,28 +55,27 @@ void Window::initialize(void)
 		/* print all the files and directories within directory*/
 		while ((ent = readdir(dir)) != NULL) {
 			std::printf("\nReading in file name %s\n", ent->d_name);
-			unsigned char** out = new unsigned char* ();
+			std::vector<unsigned char>* out = new std::vector<unsigned char>();
 			width = default_width;
 			height = default_height;
 			std::string temp = std::string(directoryNameWithSlash) + std::string(ent->d_name);
 
 			const char* filename = temp.c_str();
 
-			unsigned error = lodepng_decode_file(out, &width, &height, filename, LCT_RGB, 24);
+			unsigned error = lodepng::decode(*out, width, height, filename);
 
 			if (error != NULL) {
 				if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
 			}
 			else {
-				//std::cout << "size of array is " << sizeof(out) << std::endl;
+				std::cerr << "Image width: " << width << std::endl;
+				std::cerr << "Image height: " << height << std::endl;
+				//make image object, add to vector of images
+				PNGImage* img = new PNGImage(out, width, height);
 
-				//for debug
-				/*for(int i = 0; i < sizeof(out); ++i) {
-				for (int j = 0; j < sizeof(out[i]); ++j) {
-				if (out[i][j] != NULL)
-				std::cout << "at[" << i << "][" << j << "] is " << out[i][j] << std::endl;
-				}
-				}*/
+				//img->print();
+
+				images->push_back(img);
 			}
 		}
 		closedir(dir);
@@ -89,7 +93,11 @@ void Window::initialize(void)
 	lightWeights[1] << 0, 0, 0, 0, .5, .5, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0;
 	
-	float* pixels = new float[(int)width * (int)height];
+	Window::pixels = new float[3 * (int)width * (int)height];
+
+	combiner = new Combiner(images);
+
+	combiner->combine(lightWeights[0], pixels);
 }
 
 //----------------------------------------------------------------------------
@@ -121,6 +129,8 @@ void Window::reshapeCallback(int w, int h)
 // Callback method called by GLUT when window readraw is necessary or when glutPostRedisplay() was called.
 void Window::displayCallback()
 {
+	std::cerr << "Displaying!" << std::endl;
+
 	//Clear color and depth buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -147,10 +157,10 @@ void Window::keyboardCallback(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case 'l':
-		Combiner::combine(lightWeights[0], pixels);
+		combiner->combine(lightWeights[0], pixels);
 		break;
 	case 'k':
-		Combiner::combine(lightWeights[1], pixels);
+		combiner->combine(lightWeights[1], pixels);
 		break;
 	}
 }

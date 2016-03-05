@@ -2,6 +2,9 @@
 #define Window_h
 
 #include <Eigen/Dense>
+#include <vector>
+#include "PNGImage.h"
+#include "Combiner.h"
 
 class Window		//OpenGL output window-related routines
 {
@@ -14,7 +17,9 @@ public:
 	static int default_height;
 	static int default_bitDepth;
 	static float* pixels;					//data to draw
-	static Eigen::VectorXd* lightWeights;	//different lighting weights to change lighting scheme
+	static Eigen::VectorXd lightWeights[2];	//different lighting weights to change lighting scheme
+	static std::vector<PNGImage*>* images;
+	static Combiner* combiner;
 
 	static void initialize(void);
 	static void idleCallback(void);

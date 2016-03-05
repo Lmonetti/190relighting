@@ -2,6 +2,7 @@
 #define PNG_IMAGE_h
 
 #include <Eigen/Dense>
+#include <vector>
 
 class PNGImage
 {
@@ -9,11 +10,13 @@ public:
 	int width, height;
 
 	//vectors of color channel values for each pixel P_0 through P_n
-	Eigen::VectorXd redChannel;
-	Eigen::VectorXd greenChannel;
-	Eigen::VectorXd blueChannel;
+	Eigen::VectorXd* redChannel;
+	Eigen::VectorXd* greenChannel;
+	Eigen::VectorXd* blueChannel;
 
-	PNGImage(unsigned char**, int, int);
+	PNGImage(std::vector<unsigned char>*, int, int);
+
+	void print();
 };
 
 #endif
