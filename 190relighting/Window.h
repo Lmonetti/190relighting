@@ -6,7 +6,13 @@
 class Window		//OpenGL output window-related routines
 {
 public:
-	static float width, height;
+	//parameters
+	static unsigned int width;
+	static unsigned int height;
+	static unsigned int resolution;
+	static int default_width;
+	static int default_height;
+	static int default_bitDepth;
 	static float* pixels;					//data to draw
 	static Eigen::VectorXd* lightWeights;	//different lighting weights to change lighting scheme
 
