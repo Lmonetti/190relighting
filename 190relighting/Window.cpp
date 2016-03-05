@@ -55,14 +55,14 @@ void Window::initialize(void)
 		/* print all the files and directories within directory*/
 		while ((ent = readdir(dir)) != NULL) {
 			std::printf("\nReading in file name %s\n", ent->d_name);
-			std::vector<unsigned char>* out = new std::vector<unsigned char>();
+			std::vector<unsigned char> out;
 			width = default_width;
 			height = default_height;
 			std::string temp = std::string(directoryNameWithSlash) + std::string(ent->d_name);
 
 			const char* filename = temp.c_str();
 
-			unsigned error = lodepng::decode(*out, width, height, filename);
+			unsigned error = lodepng::decode(out, width, height, filename);
 
 			if (error != NULL) {
 				if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
@@ -71,7 +71,7 @@ void Window::initialize(void)
 				std::cerr << "Image width: " << width << std::endl;
 				std::cerr << "Image height: " << height << std::endl;
 				//make image object, add to vector of images
-				PNGImage* img = new PNGImage(out, width, height);
+				PNGImage* img = new PNGImage(&out, width, height);
 
 				//img->print();
 

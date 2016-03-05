@@ -26,8 +26,6 @@ freely, subject to the following restrictions:
 #ifndef LODEPNG_H
 #define LODEPNG_H
 
-#define _CRT_SECURE_NO_DEPRECATE
-
 #include <string.h> /*for size_t*/
 
 #ifdef __cplusplus
