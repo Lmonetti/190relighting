@@ -21,10 +21,14 @@ PNGImage::PNGImage(std::vector<unsigned char>* img, int w, int h)
 
 	//Read in data parsed by dirent, place separate color 
 	//channels into their respective arrays.
-	for (int i = 0, j = 0; i < redChannel->size(); ++i, j += 3)
+	for (int i = 0, j = 0; i < redChannel->size(); ++i, j += 4)
 	{
+		//std::cerr << "red char: " << img->at(j) << std::endl;
+		
 		//convert unsigned char to double
-		r = static_cast<double>(img->at(j));
+		r = (double)img->at(j);
+
+		//std::cerr << "red double: " << r << std::endl;
 
 		//first value goes into Red channel
 		(*redChannel)(i) = r;
@@ -41,7 +45,7 @@ PNGImage::PNGImage(std::vector<unsigned char>* img, int w, int h)
 		//third value goes into Blue channel
 		(*blueChannel)(i) = b;
 
-		//loop increment will place index at next pixel, so no need to increment i again
+		//loop increment will place index at next pixel, so no need to increment i or j again
 
 		//std::cerr << "channel index: " << i << std::endl;
 		//std::cerr << "image data index: " << j << std::endl;

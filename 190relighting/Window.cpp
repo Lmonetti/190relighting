@@ -63,6 +63,11 @@ void Window::initialize(void)
 			const char* filename = temp.c_str();
 
 			unsigned error = lodepng::decode(*out, width, height, filename);
+			std::cerr << "New image" << std::endl;
+			for (int i = 0; i < out->size(); i++)
+			{
+				std::cerr << "channel val: " << static_cast<unsigned>(out->at(i)) << std::endl;
+			}
 
 			if (error != NULL) {
 				if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
