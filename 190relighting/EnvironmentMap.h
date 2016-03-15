@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include <vector>
+#include "Combiner.h"   //Haar wavelet transform
 
 class EnvironmentMap
 {
@@ -10,6 +11,7 @@ private:
 	enum MODE {UNWEIGHTED_SELECT = 0, TRANSPORT_WEIGHTED = 1, AREA_WEIGHTED = 2};
 	int cubemap_width;
 	int SORT_MODE;
+	Combiner* combiner;
 
 public:
 	/* wavelet size */

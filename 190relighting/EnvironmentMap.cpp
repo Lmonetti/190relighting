@@ -1,7 +1,6 @@
 #include "EnvironmentMap.h"
 #include "lodepng.h"    //Load PNG files
 #include "PNGImage.h"   //Store cube map images
-#include "Combiner.h"   //Haar wavelet transform
 
 #include <dirent.h>   //Read all files from directory
 #include <algorithm>  //Sort vector
@@ -12,6 +11,7 @@ EnvironmentMap::EnvironmentMap(char* directoryName, unsigned int cubemap_width, 
 	red_light_vector = new std::vector<std::pair<int, float>*> ();
 	green_light_vector = new std::vector<std::pair<int, float>*> ();
 	blue_light_vector = new std::vector<std::pair<int, float>*> ();
+	combiner = new Combiner();
 	SORT_MODE = sort_mode;
 	wavelet_size = 100; /* default */
 	
@@ -125,7 +125,6 @@ void EnvironmentMap::buildEnvMap(char* directoryName, unsigned int cubemap_width
 void EnvironmentMap::buildEachCubeFace(std::vector<unsigned char> out, int curr_face) {
 	PNGImage* image = new PNGImage(&out, (int)cubemap_width, (int)cubemap_width);
 	int full_res = (int)(cubemap_width * cubemap_width);
-	Combiner* combiner = new Combiner();
 
 	Eigen::MatrixXd red_holder(1, image->redChannel->size());
 	red_holder.row(0) = *image->redChannel;
