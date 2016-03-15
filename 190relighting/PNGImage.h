@@ -1,7 +1,7 @@
 #ifndef PNG_IMAGE_h
 #define PNG_IMAGE_h
 
-#include <Eigen/Dense>
+#include <Eigen/Dense> //Matrix and vector calculation
 #include <vector>
 
 class PNGImage

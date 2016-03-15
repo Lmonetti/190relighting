@@ -5,6 +5,7 @@
 #include <vector>
 #include "PNGImage.h"
 #include "Combiner.h"
+#include "EnvironmentMap.h"
 
 class Window		//OpenGL output window-related routines
 {
@@ -13,6 +14,8 @@ public:
 	static unsigned int width;
 	static unsigned int height;
 	static unsigned int resolution;
+	static unsigned int cubemap_width;
+
 	static int default_width;
 	static int default_height;
 	static int default_bitDepth;
@@ -20,6 +23,7 @@ public:
 	static Eigen::VectorXd lightWeights[2];	//different lighting weights to change lighting scheme
 	static std::vector<PNGImage*>* images;
 	static Combiner* combiner;
+	static EnvironmentMap* envMap;
 
 	static void initialize(void);
 	static void idleCallback(void);

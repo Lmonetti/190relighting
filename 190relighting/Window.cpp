@@ -4,24 +4,21 @@
 #include <math.h>
 #include <cassert>
 #include <dirent.h>   //Read all files from directory
+#include <Eigen/Dense> //Matrix and vector calculations
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
+#include <GL/freeglut.h>
 #include <GL/glut.h>
 #endif
 
 #include "Window.h"
 #include "lodepng.h"    //Load PNG files
-#include <cstring>
-#include <time.h>
-#include <math.h>
-#include <cassert>
 #include "Combiner.h"
-#include <Eigen/Dense>
 
-int Window::default_width = 512;
-int Window::default_height = 384;
+int Window::default_width = 256;
+int Window::default_height = 256;
 int Window::default_bitDepth = 24;
 float* Window::pixels;
 Eigen::VectorXd Window::lightWeights[2];
@@ -29,17 +26,14 @@ Eigen::VectorXd Window::lightWeights[2];
 unsigned int Window::width;
 unsigned int Window::height;
 unsigned int Window::resolution;
+unsigned int Window::cubemap_width = 16;
 
 std::vector<PNGImage*>* Window::images;
 Combiner* Window::combiner;
+EnvironmentMap* Window::envMap;
 
 void Window::initialize(void)
 {
-	//Setup the light
-	//GLfloat light_position[] = { 1.0, 40.0, 200.0, 0.0 };
-	//gluLookAt(15, 0, 15, 0, 0, 0, 0, 1, 0);
-	//glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
 	//set window width and height
 	width = default_width;
 	height = default_height;
@@ -48,17 +42,16 @@ void Window::initialize(void)
 
 	DIR *dir;
 	struct dirent *ent;
-	char* directoryName = "povray/sphere";
-	char* directoryNameWithSlash = "povray/sphere/";
+	char* directoryName = "povray/sphere_complete";
 
 	if ((dir = opendir(directoryName)) != NULL) {
 		/* print all the files and directories within directory*/
 		while ((ent = readdir(dir)) != NULL) {
-			std::printf("\nReading in file name %s\n", ent->d_name);
+			//std::printf("\nReading in file name %s\n", ent->d_name);
 			std::vector<unsigned char> out;
 			width = default_width;
 			height = default_height;
-			std::string temp = std::string(directoryNameWithSlash) + std::string(ent->d_name);
+			std::string temp = std::string(directoryName) + "/" + std::string(ent->d_name);
 
 			const char* filename = temp.c_str();
 
@@ -68,8 +61,8 @@ void Window::initialize(void)
 				if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
 			}
 			else {
-				std::cerr << "Image width: " << width << std::endl;
-				std::cerr << "Image height: " << height << std::endl;
+				//std::cerr << "Image width: " << width << std::endl;
+				//std::cerr << "Image height: " << height << std::endl;
 				//make image object, add to vector of images
 				PNGImage* img = new PNGImage(&out, width, height);
 
@@ -85,9 +78,15 @@ void Window::initialize(void)
 		std::perror("Directory_Error");
 	}
 
-	lightWeights[0] = Eigen::VectorXd(20);
-	lightWeights[0] << 0, 0, 0, 0, 0, 0, 0, 0, .25, 0, .25,
-		0, .25, 0, .25, 0, 0, 0, 0, 0;
+	int full_res = cubemap_width * cubemap_width * 6;
+	lightWeights[0] = Eigen::VectorXd(full_res);
+	for (int i = 0; i < full_res; ++i) {
+		lightWeights[0](i) = 1.0f / (float) full_res;
+	}
+
+	//lightWeights[0] = Eigen::VectorXd(20);
+	//lightWeights[0] << 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
+		//0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05;
 	
 	lightWeights[1] = Eigen::VectorXd(20);
 	lightWeights[1] << 0, 0, 0, 0, .5, .5, 0, 0, 0, 0, 0, 0,
@@ -97,7 +96,31 @@ void Window::initialize(void)
 
 	combiner = new Combiner(images);
 
-	combiner->combine(lightWeights[0], pixels);
+	envMap = new EnvironmentMap("povray/PRTCubemap1", cubemap_width, 0);
+	
+	Eigen::VectorXd* red_light_final = new Eigen::VectorXd(envMap->red_light_vector->size());
+	Eigen::VectorXd* green_light_final = new Eigen::VectorXd(envMap->green_light_vector->size());
+	Eigen::VectorXd* blue_light_final = new Eigen::VectorXd(envMap->blue_light_vector->size());
+
+	for (int i = 0; i < 100; ++i) {
+		int index = envMap->red_light_vector->at(i)->first;
+		int val = envMap->red_light_vector->at(i)->second;
+		(*red_light_final) (index) = val;
+		//std::cout << "Red at " << index << " where value is " << val << std::endl;
+
+		index = envMap->green_light_vector->at(i)->first;
+		val = envMap->green_light_vector->at(i)->second;
+		(*green_light_final) (index) = val;
+		//std::cout << "Green at " << index << " where value is " << val << std::endl;
+
+		index = envMap->blue_light_vector->at(i)->first;
+		val = envMap->blue_light_vector->at(i)->second;
+		(*blue_light_final) (index) = val;
+		//std::cout << "Blue at " << index << " where value is " << val << std::endl;
+	}
+
+	//combiner->combine(lightWeights[0], pixels);
+	combiner->combine(*red_light_final, *green_light_final, *blue_light_final, pixels);
 }
 
 //----------------------------------------------------------------------------
