@@ -27,19 +27,15 @@ Combiner::Combiner(std::vector<PNGImage*>* images)
 	}
 
 	/* wavelet transform each row of the matrix */
-	int cubemap_width = transformRed->cols() / 6;
-	/*for (int rowN = 0; rowN < res; rowN++) {
-		for (int img = 0; img < transformRed->cols(); img += cubemap_width) {
-			Eigen::VectorXd * img_red = new Eigen::VectorXd(cubemap_width);
-			Eigen::VectorXd * img_green = new Eigen::VectorXd(cubemap_width);
-			Eigen::VectorXd * img_blue = new Eigen::VectorXd(cubemap_width);
-
+	int cubemap_res = transformRed->cols() / 6;
+	for (int rowN = 0; rowN < res; rowN++) {
+		for (int index = 0; index < transformRed->cols(); index += cubemap_res) {
 			std::cout << "waveleting row " << rowN << std::endl;
-			haar2d(transformRed->row(i));
-			haar2d(transformGreen->row(i));
-			haar2d(transformBlue->row(i));
+			haar2d(transformRed, rowN, index, sqrt(cubemap_res));
+			haar2d(transformGreen, rowN, index, sqrt(cubemap_res));
+			haar2d(transformBlue, rowN, index, sqrt(cubemap_res));
 		}
-	}*/
+	}
 }
 
 //multiply the transform matrix and the light vector to get resulting image
@@ -102,10 +98,10 @@ void Combiner::combine(Eigen::VectorXd red_light, Eigen::VectorXd green_light, E
 void Combiner::haar1drow(Eigen::MatrixXd* mat, int row, int index, int width) {
 	Eigen::MatrixXd temp(1, width);
 	int half = floor((float) width / 2.0f);
-	std::cout << "half is " << half << std::endl;
+	//std::cout << "half is " << half << std::endl;
 
 	for (int i = 0, j = 0; i < width; i += 2, ++j) {
-		std::cout << "At " << i + index << ", trying to replace index " << j << " and " << j + half << std::endl;
+		//std::cout << "At " << i + index << ", trying to replace index " << j << " and " << j + half << std::endl;
 		//fill first half with average of each pair
 		temp(j) = ((*mat)(row, i + index) + (*mat)(row, i + 1 + index)) / sqrt(2.0);
 		//fill second half with coefficients
@@ -121,7 +117,7 @@ void Combiner::haar1dcol(Eigen::MatrixXd* mat, int row, int index, int width, in
 	int half = floor((float) width / 2.0f);
 
 	for (int i = 0, j = 0; i < width; i += 2, ++j) {
-		std::cout << "At " << i * cubemap_width + index << ", trying to replace index " << j << " and " << j + half << std::endl;
+		//std::cout << "At " << i * cubemap_width + index << ", trying to replace index " << j << " and " << j + half << std::endl;
 		temp(j) = ((*mat)(row, i * cubemap_width + index) + (*mat)(row, (i + 1) * cubemap_width + index)) / sqrt(2.0);
 		temp(j + half) = ((*mat)(row, i * cubemap_width + index) - (*mat)(row, (i + 1) * cubemap_width + index)) / sqrt(2.0);
 	}
@@ -149,13 +145,13 @@ void Combiner::haar2d(Eigen::MatrixXd* mat, int row, int face, int cubemap_width
 		}
 		/* loop through all columns */
 		for (int i = 0; i < cubemap_width; ++i) {
-			haar1dcol(mat, i, row, filter_width, cubemap_width);
+			haar1dcol(mat, row, i, filter_width, cubemap_width);
 		}
 
 		/* reduce filter width */
 		filter_width /= 2;
 	}
 	
-	std::cout << "Done with Haar..." << std::endl;
+	//std::cout << "Done with Haar..." << std::endl;
 }
 

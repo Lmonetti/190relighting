@@ -142,9 +142,9 @@ void EnvironmentMap::buildEachCubeFace(std::vector<unsigned char> out, int curr_
 	combiner->haar2d(&blue_holder, 0, 0, cubemap_width);
 
 	for (int i = 0; i < full_res; ++i) {
-		std::pair<int, float> * red_pair = new std::pair<int, float>(i + curr_face, image->redChannel->coeff(i));
-		std::pair<int, float> * green_pair = new std::pair<int, float>(i + curr_face, image->greenChannel->coeff(i));
-		std::pair<int, float> * blue_pair = new std::pair<int, float>(i + curr_face, image->blueChannel->coeff(i));
+		std::pair<int, float> * red_pair = new std::pair<int, float>(i + curr_face, red_holder(0, i));
+		std::pair<int, float> * green_pair = new std::pair<int, float>(i + curr_face, green_holder(0, i));
+		std::pair<int, float> * blue_pair = new std::pair<int, float>(i + curr_face, blue_holder(0, i));
 
 		red_light_vector->push_back(red_pair);
 		green_light_vector->push_back(green_pair);

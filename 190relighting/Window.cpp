@@ -55,9 +55,9 @@ void Window::initialize(void)
 
 			const char* filename = temp.c_str();
 
-			//unsigned error = lodepng::decode(out, width, height, filename);
+			unsigned error = lodepng::decode(out, width, height, filename);
 
-			/*if (error != NULL) {
+			if (error != NULL) {
 				if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
 			}
 			else {
@@ -69,7 +69,7 @@ void Window::initialize(void)
 				//img->print();
 
 				images->push_back(img);
-			}*/
+			}
 		}
 		closedir(dir);
 	}
@@ -94,7 +94,7 @@ void Window::initialize(void)
 	
 	Window::pixels = new float[3 * (int)width * (int)height];
 
-	//combiner = new Combiner(images);
+	combiner = new Combiner(images);
 
 	envMap = new EnvironmentMap("povray/PRTCubemap1", cubemap_width, 0);
 	
@@ -107,17 +107,17 @@ void Window::initialize(void)
 		int index = envMap->red_light_vector->at(i)->first;
 		int val = envMap->red_light_vector->at(i)->second;
 		(*red_light_final) (index) = val;
-		std::cout << "Red at " << index << " where value is " << val << std::endl;
+		//std::cout << "Red at " << index << " where value is " << val << std::endl;
 
 		index = envMap->green_light_vector->at(i)->first;
 		val = envMap->green_light_vector->at(i)->second;
 		(*green_light_final) (index) = val;
-		std::cout << "Green at " << index << " where value is " << val << std::endl;
+		//std::cout << "Green at " << index << " where value is " << val << std::endl;
 
 		index = envMap->blue_light_vector->at(i)->first;
 		val = envMap->blue_light_vector->at(i)->second;
 		(*blue_light_final) (index) = val;
-		std::cout << "Blue at " << index << " where value is " << val << std::endl;
+		//std::cout << "Blue at " << index << " where value is " << val << std::endl;
 	}
 
 	//combiner->combine(lightWeights[0], pixels);
