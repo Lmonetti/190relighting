@@ -7,17 +7,17 @@ import numpy as np
 povScript = "#include \"colors.inc\" \n\
 #include \"textures.inc\" \n\
 camera {{ \n\
-    location <0, 2, -3> \n\
-    look_at <0, 1, 3> \n\
+    location <0, 2, -10> \n\
+    look_at <0, -5, 3> \n\
 }} \n\
 sphere {{ \n\
-    <0, 1, 3> 2 \n\
+    <0, -4, 3> 4 \n\
     texture {{ \n\
         pigment {{color Blue}} \n\
     }} \n\
 }} \n\
 plane {{ \n\
-  <0, -8, 0>, -1 //surface normal, displacement \n\
+  <0, 1, 0>, -8 //surface normal, displacement \n\
   //alternative: y, -1 \n\
   pigment {{ \n\
     hexagon \n\

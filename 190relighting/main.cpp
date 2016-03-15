@@ -21,6 +21,7 @@ int main(int argc, char* argv[]) {
 
 	glutDisplayFunc(Window::displayCallback);
 	glutKeyboardFunc(Window::keyboardCallback);
+	glutSpecialFunc(Window::specialKeyCallback);
 	glutReshapeFunc(Window::reshapeCallback);
 
 	//create menu

@@ -20,6 +20,7 @@
 int Window::default_width = 256;
 int Window::default_height = 256;
 int Window::default_bitDepth = 24;
+int Window::num_wavelets = 100;
 float* Window::pixels;
 Eigen::VectorXd Window::lightWeights[2];
 
@@ -84,26 +85,28 @@ void Window::initialize(void)
 		lightWeights[0](i) = 1.0f / (float) full_res;
 	}
 
-	//lightWeights[0] = Eigen::VectorXd(20);
-	//lightWeights[0] << 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
-		//0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05;
-	
-	lightWeights[1] = Eigen::VectorXd(20);
-	lightWeights[1] << 0, 0, 0, 0, .5, .5, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0;
-	
 	Window::pixels = new float[3 * (int)width * (int)height];
 
 	combiner = new Combiner(images);
 
 	envMap = new EnvironmentMap("povray/PRTCubemap1", cubemap_width, 0);
-	
+
+	populateLightVectors();
+}
+
+void Window::populateLightVectors()
+{
 	Eigen::VectorXd* red_light_final = new Eigen::VectorXd(envMap->red_light_vector->size());
 	Eigen::VectorXd* green_light_final = new Eigen::VectorXd(envMap->green_light_vector->size());
 	Eigen::VectorXd* blue_light_final = new Eigen::VectorXd(envMap->blue_light_vector->size());
 
+	for (int i = 0; i < red_light_final->size(); ++i) {
+		(*red_light_final)(i) = 0.0f;
+		(*green_light_final)(i) = 0.0f;
+		(*blue_light_final)(i) = 0.0f;
+	}
 
-	for (int i = 0; i < 100; ++i) {
+	for (int i = 0; i < num_wavelets; ++i) {
 		int index = envMap->red_light_vector->at(i)->first;
 		int val = envMap->red_light_vector->at(i)->second;
 		(*red_light_final) (index) = val;
@@ -122,6 +125,13 @@ void Window::initialize(void)
 
 	//combiner->combine(lightWeights[0], pixels);
 	combiner->combine(*red_light_final, *green_light_final, *blue_light_final, pixels);
+	for (int i = 0; i < red_light_final->size(); i+=3) {
+		std::cout << "At " << i << ": ";
+		std::cout << "red " << pixels[i];
+		std::cout << "green " << pixels[i+1];
+		std::cout << "blue " << pixels[i+2] << std::endl;
+
+	}
 }
 
 //----------------------------------------------------------------------------
@@ -185,6 +195,27 @@ void Window::keyboardCallback(unsigned char key, int x, int y)
 		break;
 	case 'k':
 		combiner->combine(lightWeights[1], pixels);
+		break;
+	}
+}
+
+void Window::specialKeyCallback(int key, int x, int y)
+{
+	switch (key)
+	{
+	case GLUT_KEY_UP:
+		if (num_wavelets < (cubemap_width * cubemap_width * 6 - 20)) {
+			std::cout << "Displaying with wavelet size " << num_wavelets << std::endl;
+			num_wavelets += 20;
+			populateLightVectors();
+		}
+		break;
+	caseGLUT_KEY_DOWN:
+		if (num_wavelets > 20) {
+			std::cout << "Displaying with wavelet size " << num_wavelets << std::endl;
+			num_wavelets -= 20;
+			populateLightVectors();
+		}
 		break;
 	}
 }

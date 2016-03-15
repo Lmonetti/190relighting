@@ -29,8 +29,8 @@ Combiner::Combiner(std::vector<PNGImage*>* images)
 	/* wavelet transform each row of the matrix */
 	int cubemap_res = transformRed->cols() / 6;
 	for (int rowN = 0; rowN < res; rowN++) {
+		//std::cout << "waveleting row " << rowN << std::endl;
 		for (int index = 0; index < transformRed->cols(); index += cubemap_res) {
-			std::cout << "waveleting row " << rowN << std::endl;
 			haar2d(transformRed, rowN, index, sqrt(cubemap_res));
 			haar2d(transformGreen, rowN, index, sqrt(cubemap_res));
 			haar2d(transformBlue, rowN, index, sqrt(cubemap_res));
@@ -56,6 +56,8 @@ void Combiner::combine(Eigen::VectorXd lights, float* out)
 	redChannel = *transformRed * lights;
 	greenChannel = *transformGreen * lights;
 	blueChannel = *transformBlue * lights;
+	float maxLight = 0.0f;
+	float normalizedLight = 0.0f;
 
 	//loop through data, add each pixel to out array
 	for (int i = 3 * redChannel.size() - 1, j = 0; i >= 0; i -= 3, j++)
@@ -63,6 +65,18 @@ void Combiner::combine(Eigen::VectorXd lights, float* out)
 		out[i - 2] = redChannel(j);
 		out[i - 1] = greenChannel(j);
 		out[i] = blueChannel(j);
+
+		//keep track of largest light
+		maxLight = std::max(out[i - 2], maxLight);
+		maxLight = std::max(out[i - 1], maxLight);
+		maxLight = std::max(out[i], maxLight);
+	}
+
+	/* Normalize output */
+	normalizedLight = 1.0f / maxLight * 255.0f;
+	for (int i = 0; i < 3 * redChannel.size() - 1; ++i)
+	{
+		out[i] = std::max(0.0f, out[i] * normalizedLight);
 	}
 }
 
@@ -81,9 +95,14 @@ void Combiner::combine(Eigen::VectorXd red_light, Eigen::VectorXd green_light, E
 	Eigen::VectorXd greenChannel(transformGreen->size());
 	Eigen::VectorXd blueChannel(transformBlue->size());
 
+	//three channels for light vector
 	redChannel = *transformRed * red_light;
 	greenChannel = *transformGreen * green_light;
 	blueChannel = *transformBlue * blue_light;
+
+	//light normalization
+	float maxLight = 0.0f;
+	float normalizedLight = 0.0f;
 
 	//loop through data, add each pixel to out array
 	for (int i = 3 * redChannel.size() - 1, j = 0; i >= 0; i -= 3, j++)
@@ -91,6 +110,24 @@ void Combiner::combine(Eigen::VectorXd red_light, Eigen::VectorXd green_light, E
 		out[i - 2] = redChannel(j);
 		out[i - 1] = greenChannel(j);
 		out[i] = blueChannel(j);
+
+		//keep track of largest light
+		maxLight = std::max(out[i - 2], maxLight);
+		maxLight = std::max(out[i - 1], maxLight);
+		maxLight = std::max(out[i], maxLight);
+	}
+
+	/* Normalize output */
+	if (maxLight < 0.0f)
+		normalizedLight = 255.0f;
+	else
+		normalizedLight = 1.0f / maxLight * 255.0f;
+
+	for (int i = 0; i < 3 * redChannel.size() - 1; ++i)
+	{
+		//std::cout << "Formerly " << out[i] << ", ";
+		out[i] = std::max(0.0f, out[i] * normalizedLight);
+		//std::cout << "which now is " << out[i] << std::endl;
 	}
 }
 
