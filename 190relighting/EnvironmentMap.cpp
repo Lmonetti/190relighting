@@ -127,12 +127,19 @@ void EnvironmentMap::buildEachCubeFace(std::vector<unsigned char> out, int curr_
 	int full_res = (int)(cubemap_width * cubemap_width);
 	Combiner* combiner = new Combiner();
 
+	Eigen::MatrixXd red_holder(1, image->redChannel->size());
+	red_holder.row(0) = *image->redChannel;
+	Eigen::MatrixXd green_holder(1, image->greenChannel->size());
+	green_holder.row(0) = *image->greenChannel;	
+	Eigen::MatrixXd blue_holder(1, image->blueChannel->size());
+	blue_holder.row(0) = *image->blueChannel;
+
 	std::cout << "Red haar transform." << std::endl;
-	combiner->haar2d(*image->redChannel);
+	combiner->haar2d(&red_holder, 0, 0, cubemap_width);
 	std::cout << "Green haar transform." << std::endl;
-	combiner->haar2d(*image->greenChannel);
+	combiner->haar2d(&green_holder, 0, 0, cubemap_width);
 	std::cout << "Blue haar transform." << std::endl;
-	combiner->haar2d(*image->blueChannel);
+	combiner->haar2d(&blue_holder, 0, 0, cubemap_width);
 
 	for (int i = 0; i < full_res; ++i) {
 		std::pair<int, float> * red_pair = new std::pair<int, float>(i + curr_face, image->redChannel->coeff(i));

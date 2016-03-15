@@ -23,13 +23,13 @@ public:
 	void combine(Eigen::VectorXd, Eigen::VectorXd, Eigen::VectorXd, float*);
 
 	//function for computing 1d haar wavelet for each row
-	void haar1drow(Eigen::VectorXd, int, int);
+	void haar1drow(Eigen::MatrixXd*, int, int, int);
 
 	//function for computing 1d haar wavelet for each column
-	void haar1dcol(Eigen::VectorXd, int, int, int);
+	void haar1dcol(Eigen::MatrixXd*, int, int, int, int);
 
 	//function for computing 2d haar wavelet for each cube face
-	void haar2d(Eigen::VectorXd);
+	void haar2d(Eigen::MatrixXd*, int, int, int);
 };
 
 #endif
